@@ -2,7 +2,7 @@
 
 
 ## Problem Analysis
-A social media platform requires managing user information, interactions, and content. Here are the key entities and their relationships:
+A social media platform requires managing user information, interactions, and content. Here are the key entities and their relationships:<br/>
 <br/>
 User: A registered individual on the platform.<br/>
 Attributes: user_id, username, email, password, bio, created_date<br/>
