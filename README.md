@@ -2,24 +2,24 @@
 
 
 ## Problem Analysis
-A social media platform requires managing user information, interactions, and content. Here are the key entities and their relationships:
-
-User: A registered individual on the platform.
-Attributes: user_id, username, email, password, bio, created_date
-A user can follow other users, post content, like posts, and comment on posts.
-
-Follower: The relationship between a user that follow another user.
-Attributes: follower_id (foreign key), followee_id (foreign key)
-A user can follow multiple users.
-
-Post: Content shared by users on the platform.
-Attributes: post_id, user_id (foreign key), content, created_date
-Each post is created by a user and can receive comments and likes.
-
-Comment: User reply to posts.
-Attributes: comment_id, post_id (foreign key), user_id (foreign key), content, created_date
-Each comment is linked to a post and a user.
-
-Like: A record of a user liking a post.
-Attributes: like_id, user_id (foreign key), post_id (foreign key)
-Each like is linked to a specific post and a user.
+A social media platform requires managing user information, interactions, and content. Here are the key entities and their relationships:<br/>
+<br/>
+User: A registered individual on the platform.<br/>
+Attributes: user_id (PK), username, email, password, role, date<br/>
+A user can follow other users, post content, like posts, and comment on posts.<br/>
+<br/>
+Follower: The relationship between a user that follow another user.<br/>
+Attributes: follower_id (PK, FK), followee_id (PK, FK)<br/>
+A user can follow multiple users.<br/>
+<br/>
+Post: Content shared by users on the platform.<br/>
+Attributes: post_id (PK), user_id (FK), content, date<br/>
+Each post is created by a user and can receive comments and likes.<br/>
+<br/>
+Comment: User reply to posts.<br/>
+Attributes: comment_id (PK), post_id (FK), user_id (FK), content, date<br/>
+Each comment is linked to a post and a user.<br/>
+<br/>
+Like: A record of a user liking a post.<br/>
+Attributes: like_id (PK), user_id (FK), post_id (FK)<br/>
+Each like is linked to a specific post and a user.<br/>
