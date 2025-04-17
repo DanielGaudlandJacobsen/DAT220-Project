@@ -5,7 +5,7 @@
 A social media platform requires managing user information, interactions, and content. Here are the key entities and their relationships:<br/>
 <br/>
 User: A registered individual on the platform.<br/>
-Attributes: user_id (PK), username, email, password, bio, created_date<br/>
+Attributes: user_id (PK), username, email, password, created_date<br/>
 A user can follow other users, post content, like posts, and comment on posts.<br/>
 <br/>
 Follower: The relationship between a user that follow another user.<br/>
