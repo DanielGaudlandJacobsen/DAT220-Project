@@ -1,17 +1,8 @@
 import sqlite3
 from sqlite3 import Error
-from werkzeug.security import generate_password_hash
 
 database = r"./database.db"
 
-def create_connection(db_file):
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-        return conn
-    except Error as e:
-        print(e)
-    return conn
 
 sql_create_users_table = """
 CREATE TABLE IF NOT EXISTS users (
@@ -59,10 +50,46 @@ CREATE TABLE IF NOT EXISTS likes (
 
 sql_create_followers_table = """
 CREATE TABLE IF NOT EXISTS followers (
-    follower_id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
     follower_user_id INTEGER NOT NULL,
+    PRIMARY KEY (user_id, follower_user_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     FOREIGN KEY (follower_user_id) REFERENCES users (user_id)
 );
 """
+
+
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        return conn
+    except Error as e:
+        print(f"Error: {e}")
+    return conn
+
+
+def create_table(conn, create_table_sql):
+    """ create a table from the create_table_sql statement
+    """
+    try:
+        cur = conn.cursor()
+        cur.execute(create_table_sql)
+        cur.close()
+    except Error as e:
+        print(f"Error: {e}")
+
+
+def setup():
+    conn = create_connection(database)
+    if conn is not None:
+        create_table(conn, sql_create_users_table)
+        create_table(conn, sql_create_posts_table)
+        create_table(conn, sql_create_comments_table)
+        create_table(conn, sql_create_likes_table)
+        create_table(conn, sql_create_followers_table)
+        conn.close()
+
+
+if __name__ == '__main__':
+    setup()
