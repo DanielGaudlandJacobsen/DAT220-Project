@@ -42,7 +42,7 @@ def register():
             email = request.form.get("email", "").strip()
             valid = validate_email(email)
             email = valid.email
-        except EmailNotValidError as e:
+        except EmailNotValidError:
             flash("Invalid email address.", category="error")
             return redirect(url_for("index"))
 
