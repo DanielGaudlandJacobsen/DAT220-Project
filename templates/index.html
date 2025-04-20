@@ -24,7 +24,7 @@
     <div class="col-md-6">
         <div class="card p-4 shadow-sm">
             <h3 class="card-title mb-3">Create New Account</h3>
-            <form method="POST" action="">
+            <form method="POST" action="{{ url_for('register') }}">
                 <div class="mb-3">
                     <label for="register-username" class="form-label">Userame</label>
                     <input type="text" class="form-control" id="register-username" name="username" required>
