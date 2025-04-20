@@ -7,7 +7,7 @@
     <div class="col-md-6">
         <div class="card p-4 shadow-sm">
             <h3 class="card-title mb-3">Login</h3>
-            <form method="POST" action="">
+            <form method="POST" action="{{ url_for('login') }}">
                 <div class="mb-3">
                     <label for="login-email" class="form-label">Email</label>
                     <input type="email" class="form-control" id="login-email" name="email" required>
@@ -24,10 +24,10 @@
     <div class="col-md-6">
         <div class="card p-4 shadow-sm">
             <h3 class="card-title mb-3">Create New Account</h3>
-            <form method="POST" action="">
+            <form method="POST" action="{{ url_for('register') }}">
                 <div class="mb-3">
-                    <label for="register-name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="register-name" name="name" required>
+                    <label for="register-username" class="form-label">Userame</label>
+                    <input type="text" class="form-control" id="register-username" name="username" required>
                 </div>
                 <div class="mb-3">
                     <label for="register-email" class="form-label">Email</label>
@@ -35,7 +35,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="register-password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="register-password" name="password" required>
+                    <input type="password" class="form-control" id="register-password" name="password1" required>
+                </div>
+                <div class="mb-3">
+                    <label for="confirm-password" class="form-label">Confirm password</label>
+                    <input type="password" class="form-control" id="confirm-password" name="password2" required>
                 </div>
                 <button type="submit" class="btn btn-success">Register</button>
             </form>

@@ -8,8 +8,8 @@ sql_create_users_table = """
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY,
     username VARCHAR(15) UNIQUE NOT NULL,
-    password VARCHAR(30) NOT NULL,
-    email VARCHAR(40) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
     role TEXT NOT NULL CHECK(role IN ('admin', 'user')),
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -78,6 +78,62 @@ def create_table(conn, create_table_sql):
         cur.close()
     except Error as e:
         print(f"Error: {e}")
+
+
+def add_user(conn, username, password, email, role="user"):
+    sql = ''' INSERT INTO users(username, password, email, role, date)
+              VALUES(?,?,?,?,datetime('now','localtime'));
+              '''
+    try:
+        cur = conn.cursor()
+        cur.execute(sql, (username, password, email, role))
+        conn.commit()
+        cur.close()
+    except Error as e:
+        print(f"Error: {e}")
+
+
+def select_users(conn):
+    """
+    Returns a list of all existing usernames
+    """
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT username FROM users")
+        users = []
+        for username in cur:
+            users.append(username[0])
+        cur.close()
+        return users
+    
+    except Error as e:
+        print(f"Error: {e}")
+        return []
+    
+
+def select_user(conn, email):
+    try:
+        cur = conn.cursor()
+        sql = "SELECT username, password, role, date FROM users WHERE email = ?"
+        cur.execute(sql, (email,))
+        result = cur.fetchone()
+
+        if result is None:
+            print(f"No user found with username: {email}")
+            return None
+        
+        user = {"email": email,
+                "username": result[0],
+                "password": result[1],
+                "role": result[2],
+                "date": result[3]}
+        cur.close()
+        return user
+    
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+
 
 
 def setup():
