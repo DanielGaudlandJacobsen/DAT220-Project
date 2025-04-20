@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for
-from setup_db import database, create_connection, add_user, select_users
+from setup_db import database, create_connection, add_user, select_users, select_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -75,6 +75,30 @@ def register():
     
     return redirect(url_for("index"))
 
+
+def valid_login(email, password):
+    db = get_db()
+    user = select_user(db, email)
+
+    if user and check_password_hash(user["password"], password):
+        return True
+    return False
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if valid_login(email, password):
+        db = get_db()
+        user = select_user(db, email)
+        session["username"] = email
+        session["role"] = user["role"]
+        flash("Logged in", category="success")
+    else:
+        flash("Invalid login", category="error")
+    return redirect(url_for("index"))
 
 
 if __name__ == "__main__":

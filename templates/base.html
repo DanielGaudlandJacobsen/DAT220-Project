@@ -14,8 +14,9 @@
             <a class="navbar-brand" href="{{ url_for('index') }}">SimpleSocial</a>
         </div>
     </nav>
-    
-    {% with messages = get_flashed_messages(with_categories=true) %}
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
                 {% if category == "error" %}
@@ -29,9 +30,8 @@
                 {% endif %}
             {% endfor %}
         {% endif %}
-    {% endwith %}
+        {% endwith %}
 
-    <div class="container">
         {% block content %}
         {% endblock %}
     </div>

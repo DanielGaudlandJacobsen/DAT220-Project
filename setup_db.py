@@ -109,6 +109,31 @@ def select_users(conn):
     except Error as e:
         print(f"Error: {e}")
         return []
+    
+
+def select_user(conn, email):
+    try:
+        cur = conn.cursor()
+        sql = "SELECT username, password, role, date FROM users WHERE email = ?"
+        cur.execute(sql, (email,))
+        result = cur.fetchone()
+
+        if result is None:
+            print(f"No user found with username: {email}")
+            return None
+        
+        user = {"email": email,
+                "username": result[0],
+                "password": result[1],
+                "role": result[2],
+                "date": result[3]}
+        cur.close()
+        return user
+    
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+
 
 
 def setup():
