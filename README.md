@@ -33,4 +33,8 @@ Creating a social media platform involves managing how users interact with each 
 - `user_id (FK)`
 - `post_id (FK)`
 
+## ER diagram
+![image](https://github.com/user-attachments/assets/a6544965-4ee5-48e0-92ba-5266f7d24eae)
+
+
 
