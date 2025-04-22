@@ -95,9 +95,6 @@ def add_user(conn, username, password_hash, email, role="user"):
 
 
 def select_users(conn):
-    """
-    Returns a list of all existing usernames
-    """
     try:
         cur = conn.cursor()
         cur.execute("SELECT username FROM users")
@@ -115,12 +112,12 @@ def select_users(conn):
 def select_user(conn, email):
     try:
         cur = conn.cursor()
-        sql = "SELECT username, password, role, date FROM users WHERE email = ?"
+        sql = "SELECT * FROM users WHERE email = ?"
         cur.execute(sql, (email,))
         result = cur.fetchone()
 
         if result is None:
-            print(f"No user found with username: {email}")
+            print(f"No user found with email: {email}")
             return None
         
         user = {"email": email,
@@ -134,8 +131,9 @@ def select_user(conn, email):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
 
-def init_users(conn):
+""" def init_users(conn):
     init = [
         ("admin", generate_password_hash("admin123"), "admin@example.com", "admin"),
         ("daniel", generate_password_hash("daniel123"), "daniel@example.com", "admin"),
@@ -151,7 +149,7 @@ def init_users(conn):
     existing_users = select_users(conn)
     for user in init:
         if user[0] not in existing_users:
-            add_user(conn, user[0], user[1], user[2], user[3])
+            add_user(conn, user[0], user[1], user[2], user[3]) """
 
 
 def setup():
@@ -162,7 +160,7 @@ def setup():
         create_table(conn, sql_create_comments_table)
         create_table(conn, sql_create_likes_table)
         create_table(conn, sql_create_followers_table)
-        init_users(conn)
+        #init_users(conn)
         conn.close()
 
 
