@@ -95,9 +95,6 @@ def add_user(conn, username, password_hash, email, role="user"):
 
 
 def select_users(conn):
-    """
-    Returns a list of all existing usernames
-    """
     try:
         cur = conn.cursor()
         cur.execute("SELECT username FROM users")
@@ -115,12 +112,12 @@ def select_users(conn):
 def select_user(conn, email):
     try:
         cur = conn.cursor()
-        sql = "SELECT username, password, role, date FROM users WHERE email = ?"
+        sql = "SELECT * FROM users WHERE email = ?"
         cur.execute(sql, (email,))
         result = cur.fetchone()
 
         if result is None:
-            print(f"No user found with username: {email}")
+            print(f"No user found with email: {email}")
             return None
         
         user = {"email": email,

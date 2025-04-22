@@ -93,7 +93,8 @@ def login():
     if valid_login(email, password):
         db = get_db()
         user = select_user(db, email)
-        session["username"] = email
+        session["username"] = user["username"]
+        session["email"] = email
         session["role"] = user["role"]
         flash("Logged in", category="success")
         return redirect(url_for("index"))
@@ -108,6 +109,14 @@ def logout():
     session.pop("role")
     flash("Logged out", category="success")
     return redirect(url_for("index"))
+
+
+@app.route('/profile/<username>')
+def profile(username):
+    user = None
+    if not user:
+        return
+    return render_template('profile.html', user=user)
 
 
 if __name__ == "__main__":

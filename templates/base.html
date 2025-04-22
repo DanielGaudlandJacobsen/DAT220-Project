@@ -15,9 +15,9 @@
         </div>
         {% if session.get('username') %}
             <div class="d-flex align-items-center ms-auto">
-                <span class="me-3 fw-semibold" style="color: white;">
+                <a href="{{ url_for('profile', username=session.get('username')) }}" class="me-3 text-white text-decoration-none fw-semibold">
                     {{ session.get('username') }}
-                </span>
+                </a>
                 <form method="POST" action="{{ url_for('logout') }}">
                     <button type="submit" class="btn btn-outline-light">Logout</button>
                 </form>
