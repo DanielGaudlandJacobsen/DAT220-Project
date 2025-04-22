@@ -96,9 +96,10 @@ def login():
         session["username"] = email
         session["role"] = user["role"]
         flash("Logged in", category="success")
+        return redirect(url_for("feed"))
     else:
         flash("Invalid login", category="error")
-    return redirect(url_for("index"))
+        return redirect(url_for("index"))
 
 @app.route("/logout")
 def logout():
