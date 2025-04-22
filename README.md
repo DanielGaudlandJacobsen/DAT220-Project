@@ -33,6 +33,16 @@ Creating a social media platform involves managing how users interact with each 
 - `user_id (FK)`
 - `post_id (FK)`
 
+## Normalization analysis
+### 1NF
+- All tables use atomic values
+- No repeating groups
+### 2NF
+- All non-key attributes are fully dependent on the whole primary key (no partial dependencies)
+### 3NF
+- No non-key attributes depending on other non-key attributes (no transitive dependencies)
+- All non-key attributes depend only on the primary key
+
 ## ER diagram
 ![image](https://github.com/user-attachments/assets/a6544965-4ee5-48e0-92ba-5266f7d24eae)
 
