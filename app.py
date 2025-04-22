@@ -96,17 +96,19 @@ def login():
         session["username"] = email
         session["role"] = user["role"]
         flash("Logged in", category="success")
-        return redirect(url_for("feed"))
+        return redirect(url_for("index"))
     else:
         flash("Invalid login", category="error")
         return redirect(url_for("index"))
+    
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     session.pop("username")
     session.pop("role")
     flash("Logged out", category="success")
     return redirect(url_for("index"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

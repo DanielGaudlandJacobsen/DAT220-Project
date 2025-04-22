@@ -134,8 +134,9 @@ def select_user(conn, email):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
 
-def init_users(conn):
+""" def init_users(conn):
     init = [
         ("admin", generate_password_hash("admin123"), "admin@example.com", "admin"),
         ("daniel", generate_password_hash("daniel123"), "daniel@example.com", "admin"),
@@ -151,7 +152,7 @@ def init_users(conn):
     existing_users = select_users(conn)
     for user in init:
         if user[0] not in existing_users:
-            add_user(conn, user[0], user[1], user[2], user[3])
+            add_user(conn, user[0], user[1], user[2], user[3]) """
 
 
 def setup():
@@ -162,7 +163,7 @@ def setup():
         create_table(conn, sql_create_comments_table)
         create_table(conn, sql_create_likes_table)
         create_table(conn, sql_create_followers_table)
-        init_users(conn)
+        #init_users(conn)
         conn.close()
 
 
