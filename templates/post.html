@@ -21,6 +21,11 @@
                         {{ post.like_count }} Likes
                     </button>
                 </form>
+                {% if session.username == post.post_author or session.role == "admin" %}
+                <form method="POST" action="{{ url_for('delete_post', post_id=post.post_id) }}">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete Post</button>
+                </form>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -40,6 +45,11 @@
                 <h6 class="mb-1">{{ comment.comment_author }}</h6>
                 <p>{{ comment.content }}</p>
                 <small class="text-muted">{{ comment.comment_date }}</small>
+                {% if session.username == comment.comment_author or session.role == "admin" %}
+                <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.comment_id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger btn-sm mt-1">Delete</button>
+                </form>
+                {% endif %}
             </div>
             {% else %}
             <p class="text-muted">No comments yet.</p>

@@ -165,7 +165,7 @@ def select_comments_by_post_id(conn, post_id):
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         sql = """
-        SELECT c.content, c.date AS comment_date, u.username AS comment_author
+        SELECT c.comment_id, c.content, c.date AS comment_date, u.username AS comment_author
         FROM comments c
         JOIN users u ON c.user_id = u.user_id
         WHERE c.post_id = ?

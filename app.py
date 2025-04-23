@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
 from datetime import datetime
+import sqlite3
 
 app = Flask(__name__)
 
@@ -148,6 +149,60 @@ def comment_post():
 def create_post():
     return
 
+
+@app.route("/delete_post/<int:post_id>", methods=["POST"])
+def delete_post(post_id):
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    username = session.get("username")
+    role = session.get("role")
+
+    cur = db.cursor()
+    cur.execute("SELECT post_id, user_id FROM posts WHERE post_id = ?", (post_id,))
+    post = cur.fetchone()
+
+    if not post:
+        abort(404)
+
+    cur.execute("SELECT user_id FROM users WHERE username = ?", (username,))
+    user_id = cur.fetchone()["user_id"]
+
+    if role == "admin" or post["user_id"] == user_id:
+        cur.execute("DELETE FROM comments WHERE post_id = ?", (post_id,))
+        cur.execute("DELETE FROM likes WHERE post_id = ?", (post_id,))
+        cur.execute("DELETE FROM posts WHERE post_id = ?", (post_id,))
+        db.commit()
+        flash("Post deleted successfully.", "success")
+    else:
+        flash("You don't have permission to delete this post.", "error")
+    return redirect(url_for("feed"))
+
+
+@app.route("/delete_comment/<int:comment_id>", methods=["POST"])
+def delete_comment(comment_id):
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    username = session.get("username")
+    role = session.get("role")
+
+    cur = db.cursor()
+    cur.execute("SELECT comment_id, user_id FROM comments WHERE comment_id = ?", (comment_id,))
+    comment = cur.fetchone()
+
+    if not comment:
+        abort(404)
+
+    cur.execute("SELECT user_id FROM users WHERE username = ?", (username,))
+    user_id = cur.fetchone()["user_id"]
+
+    if role == "admin" or comment["user_id"] == user_id:
+        cur.execute("DELETE FROM comments WHERE comment_id = ?", (comment_id,))
+        db.commit()
+        flash("Comment deleted successfully.", "success")
+    else:
+        flash("You don't have permission to delete this comment.", "error")
+
+    return redirect(request.referrer or url_for("feed"))
 
 @app.route("/post/<int:post_id>", methods=["GET"])
 def post(post_id):
