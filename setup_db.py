@@ -55,10 +55,10 @@ def select_user(conn, email):
             return None
         
         user = {"email": email,
-                "username": result[0],
-                "password": result[1],
-                "role": result[2],
-                "date": result[3]}
+                "username": result[1],
+                "password": result[2],
+                "role": result[4],
+                "date": result[5]}
         cur.close()
         return user
     
@@ -92,6 +92,45 @@ def get_stats(conn, username):
             return None
         
         cur.close()
+        return result
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+    
+
+def select_posts(conn, username):
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        sql = """
+        SELECT p.post_id, p.title, p.content,
+        p.date AS post_date,
+        post_user.username AS post_author,
+        c.comment_id,
+        c.content AS comment_content,
+        c.date AS comment_date,
+        comment_user.username AS comment_author,
+        (
+            SELECT COUNT(*)
+            FROM likes l
+            WHERE l.post_id = p.post_id
+        ) AS like_count
+        FROM posts p
+        JOIN users post_user ON p.user_id = post_user.user_id
+        LEFT JOIN comments c ON p.post_id = c.post_id
+        LEFT JOIN users comment_user ON c.user_id = comment_user.user_id
+        WHERE p.user_id = (SELECT user_id FROM users WHERE username = ?)
+        OR p.user_id IN (
+            SELECT user_id
+            FROM followers
+            WHERE follower_user_id = (SELECT user_id FROM users WHERE username = ?)
+        )
+        ORDER BY p.date DESC, c.date ASC;
+        """
+
+        cur.execute(sql, (username, username))
+        result = cur.fetchall()
         return result
 
     except Error as e:

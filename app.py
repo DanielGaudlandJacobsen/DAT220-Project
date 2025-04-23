@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -70,7 +70,7 @@ def register():
             session["role"] = "user"
             flash("Account created!", category="success")
 
-            return redirect(url_for("index"))
+            return redirect(url_for("feed"))
     else:
         flash("You must enter the required information", category="error")
     
@@ -98,7 +98,7 @@ def login():
         session["email"] = email
         session["role"] = user["role"]
         flash("Logged in", category="success")
-        return redirect(url_for("index"))
+        return redirect(url_for("feed"))
     else:
         flash("Invalid login", category="error")
         return redirect(url_for("index"))
@@ -112,7 +112,7 @@ def logout():
     return redirect(url_for("index"))
 
 
-@app.route('/profile/<username>')
+@app.route("/profile/<username>")
 def profile(username):
     db = get_db()
     user = get_stats(db, username)
@@ -121,6 +121,32 @@ def profile(username):
     if not user:
         abort(404)
     return render_template('profile.html', user=user, date=date)
+
+
+@app.route("/feed")
+def feed():
+    db = get_db()
+    username = session.get("username")
+    
+    posts = select_posts(db, username)
+    #print(posts)
+
+    return render_template('feed.html', posts=posts)
+
+
+@app.route("/like_post", methods=["POST"])
+def like_post():
+    return
+
+
+@app.route("/comment_post", methods=["POST"])
+def comment_post():
+    return
+
+
+@app.route("/create_post", methods=["POST"])
+def create_post():
+    return
 
 
 if __name__ == "__main__":
