@@ -11,21 +11,21 @@
             </div>
             <div class="card-body">
                 <p><strong>Email:</strong> {{ user.email }}</p>
-                <p><strong>Member Since:</strong> {{ user.member_since.strftime('%B %d, %Y') }}</p>
+                <p><strong>Member Since:</strong> {{ date.strftime('%d %b %Y') }}</p>
                 
                 <hr>
                 
                 <div class="row text-center">
                     <div class="col">
-                        <h5>{{ user.post_count }}</h5>
+                        <h5>{{ user.total_posts }}</h5>
                         <p class="text-muted">Posts</p>
                     </div>
                     <div class="col">
-                        <h5>{{ user.follower_count }}</h5>
+                        <h5>{{ user.total_followers }}</h5>
                         <p class="text-muted">Followers</p>
                     </div>
                     <div class="col">
-                        <h5>{{ user.like_count }}</h5>
+                        <h5>{{ user.total_likes }}</h5>
                         <p class="text-muted">Likes</p>
                     </div>
                 </div>
