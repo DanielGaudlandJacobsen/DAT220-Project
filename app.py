@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -148,6 +148,15 @@ def comment_post():
 def create_post():
     return
 
+
+@app.route("/post/<int:post_id>", methods=["GET"])
+def post(post_id):
+    db = get_db()
+    post = select_post_by_id(db, post_id)
+    if not post:
+        abort(404)
+    comments = select_comments_by_post_id(db, post_id)
+    return render_template('post.html', post=post, comments=comments)
 
 if __name__ == "__main__":
     app.run(debug=True)

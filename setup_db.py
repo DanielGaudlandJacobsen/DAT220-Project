@@ -136,3 +136,43 @@ def select_posts(conn, username):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
+def select_post_by_id(conn, post_id):
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        sql = """
+        SELECT p.post_id, p.title, p.content,
+        p.date AS post_date,
+        u.username AS post_author,
+        (
+            SELECT COUNT(*)
+            FROM likes l
+            WHERE l.post_id = p.post_id
+        ) AS like_count
+        FROM posts p
+        JOIN users u ON p.user_id = u.user_id
+        WHERE p.post_id = ?
+        """
+        cur.execute(sql, (post_id,))
+        return cur.fetchone()
+    except Exception as e:
+        print("Error fetching post by ID:", e)
+        return None
+
+def select_comments_by_post_id(conn, post_id):
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        sql = """
+        SELECT c.content, c.date AS comment_date, u.username AS comment_author
+        FROM comments c
+        JOIN users u ON c.user_id = u.user_id
+        WHERE c.post_id = ?
+        ORDER BY c.date ASC
+        """
+        cur.execute(sql, (post_id,))
+        return cur.fetchall()
+    except Exception as e:
+        print("Error fetching comments:", e)
+        return []

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} | SimpleSocial{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <h6 class="card-subtitle text-muted mb-2">
+                by 
+                <a href="{{ url_for('profile', username=post.post_author) }}" class="text-decoration-none">
+                    {{ post.post_author }}
+                </a>
+            </h6>
+            <p class="card-text">{{ post.content }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">{{ post.post_date }}</small>
+                <form method="POST" action="{{ url_for('like_post', post_id=post.post_id) }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        {{ post.like_count }} Likes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <strong>Comments</strong>
+        </div>
+        <form method="POST" action="{{ url_for('comment_post', post_id=post.post_id) }}">
+            <div class="input-group mt-2">
+                <input type="text" name="comment" class="form-control" placeholder="Write a comment..." required>
+                <button type="submit" class="btn btn-primary">Comment</button>
+            </div>
+        </form>
+        <div class="card-body">
+            {% for comment in comments %}
+            <div class="mb-3 border-bottom pb-2">
+                <h6 class="mb-1">{{ comment.comment_author }}</h6>
+                <p>{{ comment.content }}</p>
+                <small class="text-muted">{{ comment.comment_date }}</small>
+            </div>
+            {% else %}
+            <p class="text-muted">No comments yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
