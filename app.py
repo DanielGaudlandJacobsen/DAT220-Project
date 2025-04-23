@@ -1,8 +1,9 @@
-from flask import Flask, render_template, g, request, flash, session, redirect, url_for
-from setup_db import database, create_connection, add_user, select_users, select_user
+from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -113,10 +114,13 @@ def logout():
 
 @app.route('/profile/<username>')
 def profile(username):
-    user = None
+    db = get_db()
+    user = get_stats(db, username)
+    date = user["date"]
+    date = datetime.fromisoformat(user["date"])
     if not user:
-        return
-    return render_template('profile.html', user=user)
+        abort(404)
+    return render_template('profile.html', user=user, date=date)
 
 
 if __name__ == "__main__":

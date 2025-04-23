@@ -65,3 +65,35 @@ def select_user(conn, email):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
+
+def get_stats(conn, username):
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        sql = """
+        SELECT u.username, u.email, u.date,
+        COUNT(DISTINCT p.post_id) AS total_posts,
+        COUNT(DISTINCT f.follower_user_id) AS total_followers,
+        COUNT(DISTINCT l.like_id) AS total_likes
+        FROM users u
+        LEFT JOIN posts p ON u.user_id = p.user_id
+        LEFT JOIN followers f ON u.user_id = f.user_id
+        LEFT JOIN 
+        likes l ON u.user_id = l.user_id
+        WHERE u.username = ?
+        GROUP BY u.user_id;
+        """
+        cur.execute(sql, (username,))
+        result = cur.fetchone()
+
+        if result is None:
+            print(f"No user found with email: {username}")
+            return None
+        
+        cur.close()
+        return result
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
