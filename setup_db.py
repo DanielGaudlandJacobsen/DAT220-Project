@@ -294,3 +294,10 @@ def unfollow_user(conn, follower_id, user_id):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
+
+def email_exists(conn, email):
+    cur = conn.cursor()
+    sql = "SELECT 1 FROM users WHERE email = ?"
+    cur.execute(sql, (email,))
+    return cur.fetchone() is not None

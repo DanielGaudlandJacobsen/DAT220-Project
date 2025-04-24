@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment, update_post, update_comment, select_comment, get_user_id, already_following, follow_user, unfollow_user
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment, update_post, update_comment, select_comment, get_user_id, already_following, follow_user, unfollow_user, email_exists
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -40,7 +40,6 @@ def register():
     password_2 = request.form.get("password2")
     email = escape(request.form.get("email")).strip()
 
-
     if email and len(email) < 51:
         try:
             email = request.form.get("email", "").strip()
@@ -56,6 +55,8 @@ def register():
 
         if username in users:
             flash("Username already exists.", category="error")
+        elif email_exists(db, email):
+            flash("Email is already registered.", category="error")
         elif len(username) < 2:
             flash("Username must be greater than 1 character.", category="error")
         elif len(username) > 15:
@@ -69,11 +70,9 @@ def register():
         else:
             pwd_hash = generate_password_hash(password_1)
             add_user(db, username, pwd_hash, email)
-            session["username"] = username
-            session["role"] = "user"
             flash("Account created!", category="success")
 
-            return redirect(url_for("feed"))
+            return redirect(url_for("index"))
     else:
         flash("You must enter the required information", category="error")
     
@@ -142,6 +141,7 @@ def feed():
 @app.route("/like_post", methods=["POST"])
 def like_post():
     user_id = session.get("user_id")
+    print(user_id)
     post_id = request.form.get("post_id")
     db = get_db()
     db.row_factory = sqlite3.Row
