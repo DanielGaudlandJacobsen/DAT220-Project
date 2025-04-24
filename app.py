@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment, update_post, update_comment, select_comment
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -28,6 +28,8 @@ def teardown_db(error):
 
 @app.route("/")
 def index():
+    if session.get("username"):
+        return redirect(url_for("feed"))
     return render_template("index.html")
 
 
@@ -233,8 +235,39 @@ def post(post_id):
     if not post:
         abort(404)
     comments = select_comments_by_post_id(db, post_id, sort)
-    return render_template('post.html', post=post, comments=comments)
+    return render_template("post.html", post=post, comments=comments)
 
+
+@app.route("/edit_post/<int:post_id>", methods=["POST"])
+def edit_post(post_id):
+    content = escape(request.form.get("content"))
+
+    if not content or len(content) > 255:
+        flash("Post content id empty or too long.", "error")
+        return redirect(url_for("post", post_id=post_id))
+    
+    db = get_db()
+    update_post(db, post_id, content)
+    flash("Post updated successfully.", "success")
+
+    return redirect(url_for("post", post_id=post_id))
+
+
+@app.route("/edit_comment/<int:comment_id>", methods=["POST"])
+def edit_comment(comment_id):
+    db = get_db()
+    content = escape(request.form.get("content"))
+    comment = select_comment(db, comment_id)
+    post_id = comment["post_id"]
+
+    if not content or len(content) > 255:
+        flash("PoComment content is empty or too long.", "error")
+        return redirect(url_for("post", post_id=post_id))
+    
+    update_comment(db, comment_id, content)
+
+    flash("Comment updated successfully.", "success")
+    return redirect(url_for("post", post_id=post_id))
 
 if __name__ == "__main__":
     app.run(debug=True)

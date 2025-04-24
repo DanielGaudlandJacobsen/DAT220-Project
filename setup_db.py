@@ -173,7 +173,7 @@ def select_comments_by_post_id(conn, post_id, sort="newest"):
             order_by = "c.date DESC"
 
         sql = f"""
-        SELECT c.comment_id, c.content, c.date AS comment_date, u.username AS comment_author
+        SELECT c.comment_id, c.content, c.date AS comment_date, u.username AS comment_author, c.post_id
         FROM comments c
         JOIN users u ON c.user_id = u.user_id
         WHERE c.post_id = ?
@@ -184,6 +184,19 @@ def select_comments_by_post_id(conn, post_id, sort="newest"):
     except Exception as e:
         print("Error fetching comments:", e)
         return []
+    
+
+def select_comment(conn, comment_id):
+    try:
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        sql = "SELECT * FROM comments WHERE comment_id = ?;"
+        cur.execute(sql, (comment_id,))
+        return cur.fetchone()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
     
 
 def add_post(conn, user_id, title, content):
@@ -204,6 +217,32 @@ def add_comment(conn, post_id, user_id, content):
         cur = conn.cursor()
         sql = "INSERT INTO comments (post_id, user_id, content) VALUES (?,?,?);"
         cur.execute(sql, (post_id, user_id, content))
+        conn.commit()
+        conn.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+    
+
+def update_post(conn, post_id, content):
+    try:
+        cur = conn.cursor()
+        sql = "UPDATE posts SET content = ? WHERE post_id = ?;"
+        cur.execute(sql, (content, post_id))
+        conn.commit()
+        conn.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+    
+
+def update_comment(conn, comment_id, content):
+    try:
+        cur = conn.cursor()
+        sql = "UPDATE comments SET content = ? WHERE comment_id = ?;"
+        cur.execute(sql, (content, comment_id))
         conn.commit()
         conn.close()
 
