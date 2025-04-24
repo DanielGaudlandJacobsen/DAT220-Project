@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -140,17 +140,25 @@ def like_post():
     return
 
 
-@app.route("/comment_post", methods=["POST"])
-def comment_post():
-    return
+@app.route("/post/<int:post_id>/comment", methods=["POST"])
+def comment_post(post_id):
+    user_id = session.get("user_id")
+    content = request.form.get("content")
+
+    if content and len(content) <= 255:
+        db = get_db()
+        add_comment(db, post_id, user_id, content)
+        flash("Comment created successfully.", "success")
+    else: 
+        flash("Text too long or missing.", "error")
+    return redirect(url_for("post", post_id = post_id))
 
 
 @app.route("/create_post", methods=["POST"])
 def create_post():
+    user_id = session.get("user_id")
     title = request.form.get("title")
     content = request.form.get("content")
-    user_id = session.get("user_id")
-    print(user_id)
 
     if (title and content) and (len(title) <= 30 and len(content) <= 255):
         db = get_db()

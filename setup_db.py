@@ -171,10 +171,22 @@ def select_comments_by_post_id(conn, post_id):
 
 def add_post(conn, user_id, title, content):
     try:
-        print(user_id, title, content)
         cur = conn.cursor()
         sql = "INSERT INTO posts (user_id, title, content) VALUES (?,?,?);"
         cur.execute(sql, (user_id, title, content))
+        conn.commit()
+        conn.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+    
+
+def add_comment(conn, post_id, user_id, content):
+    try:
+        cur = conn.cursor()
+        sql = "INSERT INTO comments (post_id, user_id, content) VALUES (?,?,?);"
+        cur.execute(sql, (post_id, user_id, content))
         conn.commit()
         conn.close()
 
