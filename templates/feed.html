@@ -14,11 +14,11 @@
             <form method="POST" action="{{ url_for('create_post') }}">
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" name="title" id="title" class="form-control" placeholder="Post title" required>
+                    <input type="text" name="title" id="title" class="form-control" maxlength="30" placeholder="Post title" required>
                 </div>
                 <div class="mb-3">
                     <label for="content" class="form-label">Content</label>
-                    <textarea name="content" id="content" class="form-control" rows="3" placeholder="What's on your mind?" required></textarea>
+                    <textarea name="content" id="content" class="form-control" rows="3" maxlength="255" placeholder="What's on your mind?" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Post</button>
             </form>

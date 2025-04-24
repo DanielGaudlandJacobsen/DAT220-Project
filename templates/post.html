@@ -35,7 +35,7 @@
         </div>
         <form method="POST" action="{{ url_for('comment_post', post_id=post.post_id) }}">
             <div class="input-group mt-2">
-                <input type="text" name="comment" class="form-control" placeholder="Write a comment..." required>
+                <input type="text" name="content" class="form-control" maxlength="255" placeholder="Write a comment..." required>
                 <button type="submit" class="btn btn-primary">Comment</button>
             </div>
         </form>
