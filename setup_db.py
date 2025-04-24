@@ -100,22 +100,33 @@ def get_stats(conn, username):
         return None
     
 
-def select_posts(conn, username):
+def select_posts(conn, username, sort="date"):
     try:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        sql = """
-        SELECT 
-        p.post_id, u.username, p.title, p.content, p.date
+
+        if sort == "likes":
+            order_by = "like_count DESC"
+        elif sort == "date_asc":
+            order_by = "p.date ASC"
+        else:
+            order_by = "p.date DESC"
+
+        sql = f"""
+        SELECT p.post_id, u.username, p.title, p.content, p.date,
+        COUNT(l.like_id) AS like_count
         FROM posts p
         JOIN users u ON p.user_id = u.user_id
-        WHERE p.user_id = (SELECT user_id FROM users WHERE username = ?)
+        LEFT JOIN likes l ON p.post_id = l.post_id
+        WHERE 
+        p.user_id = (SELECT user_id FROM users WHERE username = ?)
         OR p.user_id IN (
             SELECT user_id
             FROM followers
             WHERE follower_user_id = (SELECT user_id FROM users WHERE username = ?)
         )
-        ORDER BY p.date DESC;
+        GROUP BY p.post_id
+        ORDER BY {order_by};
         """
 
         cur.execute(sql, (username, username))

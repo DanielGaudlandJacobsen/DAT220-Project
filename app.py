@@ -129,9 +129,9 @@ def profile(username):
 def feed():
     db = get_db()
     username = session.get("username")
-    
-    posts = select_posts(db, username)
+    sort = request.args.get("sort", "date")
 
+    posts = select_posts(db, username, sort)
     return render_template('feed.html', posts=posts)
 
 
@@ -143,7 +143,7 @@ def like_post():
 @app.route("/post/<int:post_id>/comment", methods=["POST"])
 def comment_post(post_id):
     user_id = session.get("user_id")
-    content = request.form.get("content")
+    content = escape(request.form.get("content"))
 
     if content and len(content) <= 255:
         db = get_db()
@@ -157,8 +157,8 @@ def comment_post(post_id):
 @app.route("/create_post", methods=["POST"])
 def create_post():
     user_id = session.get("user_id")
-    title = request.form.get("title")
-    content = request.form.get("content")
+    title = escape(request.form.get("title"))
+    content = escape(request.form.get("content"))
 
     if (title and content) and (len(title) <= 30 and len(content) <= 255):
         db = get_db()
