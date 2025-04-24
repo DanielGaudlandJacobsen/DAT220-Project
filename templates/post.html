@@ -13,26 +13,53 @@
                     {{ post.post_author }}
                 </a>
             </h6>
-            <p class="card-text">{{ post.content }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">{{ post.post_date }}</small>
+    
+            <div id="post-content">
+                <p class="card-text" id="post-text">{{ post.content }}</p>
+                <form id="post-edit-form" class="d-none" method="POST" action="{{ url_for('edit_post', post_id=post.post_id) }}">
+                    <textarea name="content" class="form-control mb-2" maxlength="255" required>{{ post.content }}</textarea>
+                    <button type="submit" class="btn btn-sm btn-primary me-2">Save</button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="cancelPostEdit()">Cancel</button>
+                </form>
+            </div>
+    
+            <div class="d-flex justify-content-between align-items-center mt-3">
                 <form method="POST" action="{{ url_for('like_post') }}">
                     <input type="hidden" name="post_id" value="{{ post.post_id }}">
                     <button type="submit" class="btn btn-sm btn-outline-danger">
                         {{ post.like_count }} Likes
                     </button>
                 </form>
+    
+                <small class="text-muted">{{ post.post_date }}</small>
+    
                 {% if session.username == post.post_author or session.role == "admin" %}
-                <form method="POST" action="{{ url_for('delete_post', post_id=post.post_id) }}">
-                    <button type="submit" class="btn btn-sm btn-danger">Delete Post</button>
-                </form>
+                    <div class="d-flex">
+                        <a href="javascript:void(0)" onclick="editPost()" class="btn btn-sm btn-outline-secondary me-2">Edit Post</a>
+                        <form method="POST" action="{{ url_for('delete_post', post_id=post.post_id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete Post</button>
+                        </form>
+                    </div>
                 {% endif %}
             </div>
         </div>
     </div>
+
     <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <strong>Comments</strong>
+            <div>
+                {% set comment_sort = request.args.get("sort", "newest") %}
+    
+                <a href="{{ url_for('post', post_id=post.post_id, sort='newest') }}"
+                   class="btn btn-sm {% if comment_sort == 'newest' %}btn-light{% else %}btn-outline-light{% endif %} me-1">
+                    Newest
+                </a>
+                <a href="{{ url_for('post', post_id=post.post_id, sort='oldest') }}"
+                   class="btn btn-sm {% if comment_sort == 'oldest' %}btn-light{% else %}btn-outline-light{% endif %}">
+                    Oldest
+                </a>
+            </div>
         </div>
         <form method="POST" action="{{ url_for('comment_post', post_id=post.post_id) }}">
             <div class="input-group mt-2">
@@ -43,16 +70,29 @@
         <div class="card-body">
             {% for comment in comments %}
             <div class="mb-3 border-bottom pb-2">
-                <h6 class="mb-1">
-                    <a href="{{ url_for('profile', username=comment.comment_author) }}">
-                      {{ comment.comment_author }}
+                <h6 class="card-subtitle text-muted mb-2">
+                    by 
+                    <a href="{{ url_for('profile', username=post.post_author) }}" class="text-decoration-none">
+                        {{ comment.comment_author }}
                     </a>
-                  </h6>                <p>{{ comment.content }}</p>
+                </h6>
+                <div id="comment-{{ comment.comment_id }}">
+                    <p id="comment-text-{{ comment.comment_id }}">{{ comment.content }}</p>
+                
+                    <form id="comment-edit-form-{{ comment.comment_id }}" class="d-none" method="POST" action="{{ url_for('edit_comment', comment_id=comment.comment_id) }}">
+                        <textarea name="content" class="form-control mb-2" maxlength="255" required>{{ comment.content }}</textarea>
+                        <button type="submit" class="btn btn-sm btn-primary me-2">Save</button>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="cancelCommentEdit({{ comment.comment_id }})">Cancel</button>
+                    </form>
+                </div>
                 <small class="text-muted">{{ comment.comment_date }}</small>
                 {% if session.username == comment.comment_author or session.role == "admin" %}
-                <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.comment_id) }}">
-                    <button type="submit" class="btn btn-sm btn-outline-danger btn-sm mt-1">Delete</button>
-                </form>
+                    <div class="d-flex">
+                        <a href="#" onclick="editComment({{ comment.comment_id }})" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
+                        <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.comment_id) }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </div>
                 {% endif %}
             </div>
             {% else %}
@@ -60,4 +100,26 @@
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        function editPost() {
+            document.getElementById("post-text").style.display = "none";
+            document.getElementById("post-edit-form").classList.remove("d-none");
+        }
+        
+        function cancelPostEdit() {
+            document.getElementById("post-text").style.display = "";
+            document.getElementById("post-edit-form").classList.add("d-none");
+        }
+        
+        function editComment(id) {
+            document.getElementById("comment-text-" + id).style.display = "none";
+            document.getElementById("comment-edit-form-" + id).classList.remove("d-none");
+        }
+        
+        function cancelCommentEdit(id) {
+            document.getElementById("comment-text-" + id).style.display = "";
+            document.getElementById("comment-edit-form-" + id).classList.add("d-none");
+        }
+        </script>
 {% endblock %}

@@ -47,6 +47,27 @@
         {% endblock %}
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+
+        function editPost() {
+            document.getElementById("post-text").style.display = "none";
+            document.getElementById("post-edit-form").classList.remove("d-none");
+        }
+
+        function cancelPostEdit() {
+            document.getElementById("post-text").style.display = "";
+            document.getElementById("post-edit-form").classList.add("d-none");
+        }
+
+        function editComment(id) {
+            document.getElementById("comment-text-" + id).style.display = "none";
+            document.getElementById("comment-edit-form-" + id).classList.remove("d-none");
+        }
+
+        function cancelCommentEdit(id) {
+            document.getElementById("comment-text-" + id).style.display = "";
+            document.getElementById("comment-edit-form-" + id).classList.add("d-none");
+        }
+    </script>
 </body>
 </html>
