@@ -28,6 +28,8 @@ def teardown_db(error):
 
 @app.route("/")
 def index():
+    if "username" in session:
+        return redirect(url_for("feed"))
     return render_template("index.html")
 
 
@@ -110,6 +112,8 @@ def login():
 def logout():
     session.pop("username")
     session.pop("role")
+    session.pop("user_id")
+    session.pop("email")
     flash("Logged out", category="success")
     return redirect(url_for("index"))
 
