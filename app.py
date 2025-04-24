@@ -139,7 +139,29 @@ def feed():
 
 @app.route("/like_post", methods=["POST"])
 def like_post():
-    return
+    user_id = session.get("user_id")
+    post_id = request.form.get("post_id")
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    cur = db.cursor()
+
+    cur.execute("SELECT post_id FROM posts WHERE post_id = ?", (post_id,))
+    post = cur.fetchone()
+
+    if not post:
+        abort(404)
+    
+    cur.execute("SELECT * FROM likes WHERE post_id = ? AND user_id = ?", (post_id, user_id))
+    like = cur.fetchone()
+
+    if not like:
+        cur.execute("INSERT INTO likes (post_id, user_id) VALUES (?, ?)", (post_id, user_id))
+        flash("Post liked successfully.", "success")
+    else:
+        cur.execute("DELETE FROM likes WHERE post_id = ? AND user_id = ?", (post_id, user_id))
+        flash("Post unliked successfully.", "success")
+    db.commit()
+    return redirect(request.referrer or url_for("feed"))
 
 
 @app.route("/post/<int:post_id>/comment", methods=["POST"])
@@ -268,6 +290,7 @@ def edit_comment(comment_id):
 
     flash("Comment updated successfully.", "success")
     return redirect(url_for("post", post_id=post_id))
+
 
 if __name__ == "__main__":
     app.run(debug=True)

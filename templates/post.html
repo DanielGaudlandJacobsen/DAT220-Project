@@ -39,6 +39,17 @@
                         </div>
                     {% endif %}
                 </div>
+                <form method="POST" action="{{ url_for('like_post') }}">
+                    <input type="hidden" name="post_id" value="{{ post.post_id }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                        {{ post.like_count }} Likes
+                    </button>
+                </form>
+                {% if session.username == post.post_author or session.role == "admin" %}
+                <form method="POST" action="{{ url_for('delete_post', post_id=post.post_id) }}">
+                    <button type="submit" class="btn btn-sm btn-danger">Delete Post</button>
+                </form>
+                {% endif %}
             </div>
         </div>
     </div>
