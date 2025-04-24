@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment, update_post, update_comment, select_comment
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post, add_comment, update_post, update_comment, select_comment, get_user_id, already_following, follow_user, unfollow_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -292,6 +292,46 @@ def edit_comment(comment_id):
 
     flash("Comment updated successfully.", "success")
     return redirect(url_for("post", post_id=post_id))
+
+
+@app.route("/follow_unfollow", methods=["POST"])
+def follow_unfollow():
+    db = get_db()
+
+    target_username = escape(request.form.get("username", "").strip())
+    action = request.form.get("action")
+
+    if not target_username:
+        flash("Username cannot be empty.", "error")
+        return redirect(url_for("feed"))
+
+    current_username = session.get("username")
+    if not current_username or target_username == current_username:
+        flash("You can't follow yourself.", "error")
+        return redirect(url_for("feed"))
+
+    target_user_id = get_user_id(db, target_username)
+    current_user_id = get_user_id(db, current_username)
+
+    if not target_user_id:
+        flash("User not found.", "error")
+        return redirect(url_for("feed"))
+
+    if action == "follow":
+        if already_following(db, current_user_id, target_user_id):
+            flash("You're already following this user.", "info")
+        else:
+            follow_user(db, current_user_id, target_user_id)
+            flash(f"You are now following {target_username}.", "success")
+
+    elif action == "unfollow":
+        if already_following(db, current_user_id, target_user_id):
+            unfollow_user(db, current_user_id, target_user_id)
+            flash(f"You unfollowed {target_username}.", "info")
+        else:
+            flash("You're not following this user.", "info")
+
+    return redirect(url_for("feed"))
 
 
 if __name__ == "__main__":
