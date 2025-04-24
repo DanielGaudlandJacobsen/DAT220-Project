@@ -1,5 +1,5 @@
 from flask import Flask, render_template, g, request, flash, session, redirect, url_for, abort
-from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id
+from setup_db import database, create_connection, add_user, select_users, select_user, get_stats, select_posts, select_post_by_id, select_comments_by_post_id, add_post
 from werkzeug.security import generate_password_hash, check_password_hash
 from markupsafe import escape
 from email_validator import validate_email, EmailNotValidError
@@ -95,6 +95,7 @@ def login():
     if valid_login(email, password):
         db = get_db()
         user = select_user(db, email)
+        session["user_id"] = user["user_id"]
         session["username"] = user["username"]
         session["email"] = email
         session["role"] = user["role"]
@@ -130,7 +131,6 @@ def feed():
     username = session.get("username")
     
     posts = select_posts(db, username)
-    print(posts)
 
     return render_template('feed.html', posts=posts)
 
@@ -147,7 +147,18 @@ def comment_post():
 
 @app.route("/create_post", methods=["POST"])
 def create_post():
-    return
+    title = request.form.get("title")
+    content = request.form.get("content")
+    user_id = session.get("user_id")
+    print(user_id)
+
+    if (title and content) and (len(title) <= 30 and len(content) <= 255):
+        db = get_db()
+        add_post(db, user_id, title, content)
+        flash("Post created successfully.", "success")
+    else:
+        flash("Title or text too long or missing.", "error")
+    return redirect(url_for("feed"))
 
 
 @app.route("/delete_post/<int:post_id>", methods=["POST"])

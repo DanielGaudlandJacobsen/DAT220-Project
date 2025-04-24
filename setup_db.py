@@ -55,6 +55,7 @@ def select_user(conn, email):
             return None
         
         user = {"email": email,
+                "user_id": result[0],
                 "username": result[1],
                 "password": result[2],
                 "role": result[4],
@@ -166,3 +167,17 @@ def select_comments_by_post_id(conn, post_id):
     except Exception as e:
         print("Error fetching comments:", e)
         return []
+    
+
+def add_post(conn, user_id, title, content):
+    try:
+        print(user_id, title, content)
+        cur = conn.cursor()
+        sql = "INSERT INTO posts (user_id, title, content) VALUES (?,?,?);"
+        cur.execute(sql, (user_id, title, content))
+        conn.commit()
+        conn.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
