@@ -5,7 +5,6 @@
 {% block content %}
 <div class="container">
 
-    <!-- New Post Form -->
     <div class="card mb-4 shadow-sm">
         <div class="card-header bg-primary text-white">
             <strong>Create a New Post</strong>
@@ -21,6 +20,24 @@
                     <textarea name="content" id="content" class="form-control" rows="3" maxlength="255" placeholder="What's on your mind?" required></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <strong>Follow or Unfollow a User</strong>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('follow_unfollow') }}" class="row g-2 align-items-center">
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" required>
+                </div>
+                <div class="col-md-6 d-flex justify-content-end align-items-end gap-2">
+                    <button type="submit" name="action" value="follow" class="btn btn-success">Follow</button>
+                    <button type="submit" name="action" value="unfollow" class="btn btn-danger">Unfollow</button>
+                </div>
             </form>
         </div>
     </div>

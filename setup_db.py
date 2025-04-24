@@ -249,3 +249,55 @@ def update_comment(conn, comment_id, content):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
+
+def get_user_id(conn, username):
+    cur = conn.cursor()
+    sql = "SELECT user_id FROM users WHERE username = ?"
+    cur.execute(sql, (username,))
+    result = cur.fetchone()
+    if result:
+        return result[0]
+    else:
+        return None
+
+
+def already_following(conn, follower_id, user_id):
+    cur = conn.cursor()
+    sql = "SELECT 1 FROM followers WHERE user_id = ? AND follower_user_id = ?"
+    cur.execute(sql, (user_id, follower_id))
+    result = cur.fetchone()
+    return result is not None
+
+
+def follow_user(conn, follower_id, user_id):
+    try:
+        cur = conn.cursor()
+        sql = "INSERT INTO followers (user_id, follower_user_id) VALUES (?, ?)"
+        cur.execute(sql, (user_id, follower_id))
+        conn.commit()
+        conn.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+
+
+def unfollow_user(conn, follower_id, user_id):
+    try:
+        cur = conn.cursor()
+        sql = "DELETE FROM followers WHERE user_id = ? AND follower_user_id = ?"
+        cur.execute(sql, (user_id, follower_id))
+        conn.commit()
+        conn.close()
+
+    except Error as e:
+        print(f"Error: {e}")
+        return None
+    
+
+def email_exists(conn, email):
+    cur = conn.cursor()
+    sql = "SELECT 1 FROM users WHERE email = ?"
+    cur.execute(sql, (email,))
+    return cur.fetchone() is not None
