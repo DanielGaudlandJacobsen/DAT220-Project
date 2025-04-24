@@ -81,7 +81,7 @@ def get_stats(conn, username):
         LEFT JOIN posts p ON u.user_id = p.user_id
         LEFT JOIN followers f ON u.user_id = f.user_id
         LEFT JOIN 
-        likes l ON u.user_id = l.user_id
+        likes l ON l.post_id = p.post_id
         WHERE u.username = ?
         GROUP BY u.user_id;
         """
