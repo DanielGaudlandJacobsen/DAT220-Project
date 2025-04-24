@@ -130,7 +130,7 @@ def feed():
     username = session.get("username")
     
     posts = select_posts(db, username)
-    #print(posts)
+    print(posts)
 
     return render_template('feed.html', posts=posts)
 
@@ -204,6 +204,7 @@ def delete_comment(comment_id):
 
     return redirect(request.referrer or url_for("feed"))
 
+
 @app.route("/post/<int:post_id>", methods=["GET"])
 def post(post_id):
     db = get_db()
@@ -212,6 +213,7 @@ def post(post_id):
         abort(404)
     comments = select_comments_by_post_id(db, post_id)
     return render_template('post.html', post=post, comments=comments)
+
 
 if __name__ == "__main__":
     app.run(debug=True)

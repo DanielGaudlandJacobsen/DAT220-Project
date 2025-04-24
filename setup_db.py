@@ -104,29 +104,17 @@ def select_posts(conn, username):
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         sql = """
-        SELECT p.post_id, p.title, p.content,
-        p.date AS post_date,
-        post_user.username AS post_author,
-        c.comment_id,
-        c.content AS comment_content,
-        c.date AS comment_date,
-        comment_user.username AS comment_author,
-        (
-            SELECT COUNT(*)
-            FROM likes l
-            WHERE l.post_id = p.post_id
-        ) AS like_count
+        SELECT 
+        p.post_id, u.username, p.title, p.content, p.date
         FROM posts p
-        JOIN users post_user ON p.user_id = post_user.user_id
-        LEFT JOIN comments c ON p.post_id = c.post_id
-        LEFT JOIN users comment_user ON c.user_id = comment_user.user_id
+        JOIN users u ON p.user_id = u.user_id
         WHERE p.user_id = (SELECT user_id FROM users WHERE username = ?)
         OR p.user_id IN (
             SELECT user_id
             FROM followers
             WHERE follower_user_id = (SELECT user_id FROM users WHERE username = ?)
         )
-        ORDER BY p.date DESC, c.date ASC;
+        ORDER BY p.date DESC;
         """
 
         cur.execute(sql, (username, username))
@@ -136,6 +124,7 @@ def select_posts(conn, username):
     except Error as e:
         print(f"Error: {e}")
         return None
+    
     
 def select_post_by_id(conn, post_id):
     try:
@@ -159,6 +148,7 @@ def select_post_by_id(conn, post_id):
     except Exception as e:
         print("Error fetching post by ID:", e)
         return None
+    
 
 def select_comments_by_post_id(conn, post_id):
     try:
