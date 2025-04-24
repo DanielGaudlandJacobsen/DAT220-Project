@@ -4,6 +4,7 @@ from setup_db import database, create_connection
 
 conn = create_connection(database)
 cursor = conn.cursor()
+cursor.execute("PRAGMA foreign_keys = ON;")
 
 sql_create_users_table = """
 CREATE TABLE IF NOT EXISTS users (
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS comments (
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (post_id) REFERENCES posts (post_id),
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE,,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 """
@@ -44,7 +45,7 @@ CREATE TABLE IF NOT EXISTS likes (
     like_id INTEGER PRIMARY KEY,
     post_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    FOREIGN KEY (post_id) REFERENCES posts (post_id),
+    FOREIGN KEY (post_id) REFERENCES posts (post_id) ON DELETE CASCADE,,
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 """
