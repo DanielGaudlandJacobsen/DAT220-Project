@@ -227,10 +227,12 @@ def delete_comment(comment_id):
 @app.route("/post/<int:post_id>", methods=["GET"])
 def post(post_id):
     db = get_db()
+    sort = request.args.get("sort", "newest")
+
     post = select_post_by_id(db, post_id)
     if not post:
         abort(404)
-    comments = select_comments_by_post_id(db, post_id)
+    comments = select_comments_by_post_id(db, post_id, sort)
     return render_template('post.html', post=post, comments=comments)
 
 

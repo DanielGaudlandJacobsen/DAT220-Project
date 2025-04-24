@@ -162,16 +162,22 @@ def select_post_by_id(conn, post_id):
         return None
     
 
-def select_comments_by_post_id(conn, post_id):
+def select_comments_by_post_id(conn, post_id, sort="newest"):
     try:
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        sql = """
+
+        if sort == "oldest":
+            order_by = "c.date ASC"
+        else:
+            order_by = "c.date DESC"
+
+        sql = f"""
         SELECT c.comment_id, c.content, c.date AS comment_date, u.username AS comment_author
         FROM comments c
         JOIN users u ON c.user_id = u.user_id
         WHERE c.post_id = ?
-        ORDER BY c.date ASC
+        ORDER BY {order_by}
         """
         cur.execute(sql, (post_id,))
         return cur.fetchall()
