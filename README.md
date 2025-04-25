@@ -1,7 +1,7 @@
 # Problem Analysis
 Creating a social media platform involves managing how users interact with each other and the content they share, such as posts, likes, comments, and follows. The main challenges in designing the database are making sure the data is accurate, avoiding unnecessary repetition, and ensuring that actions like searching and user interactions can be done efficiently. This project will include CRUD functionality (Create, Read, Update, Delete), SQL queries with at least five tables, and search/filter options, all developed while using Flask.
 
-## Key entities and relationships for the Database:
+## Database:
 ### User table
 > A registered individual on the platform, can follow other users, post content, like posts, and comment on posts.
 - `user_id (PK)`
