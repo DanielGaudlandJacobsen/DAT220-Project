@@ -80,8 +80,7 @@ def get_stats(conn, username):
         FROM users u
         LEFT JOIN posts p ON u.user_id = p.user_id
         LEFT JOIN followers f ON u.user_id = f.user_id
-        LEFT JOIN 
-        likes l ON l.post_id = p.post_id
+        LEFT JOIN likes l ON l.post_id = p.post_id
         WHERE u.username = ?
         GROUP BY u.user_id;
         """
@@ -118,8 +117,7 @@ def select_posts(conn, username, sort="date"):
         FROM posts p
         JOIN users u ON p.user_id = u.user_id
         LEFT JOIN likes l ON p.post_id = l.post_id
-        WHERE 
-        p.user_id = (SELECT user_id FROM users WHERE username = ?)
+        WHERE p.user_id = (SELECT user_id FROM users WHERE username = ?)
         OR p.user_id IN (
             SELECT user_id
             FROM followers
